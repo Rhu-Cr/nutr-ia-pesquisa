@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { Leaf } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -118,8 +120,35 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+          <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+            <Link to="/" className="flex items-center gap-2 font-bold">
+              <div className="rounded-lg bg-primary/10 p-1.5">
+                <Leaf className="h-5 w-5 text-primary" />
+              </div>
+              <span>Nutr.IA <span className="font-normal text-muted-foreground">| Portal de Feedback</span></span>
+            </Link>
+            <nav className="flex items-center gap-1">
+              <Link
+                to="/"
+                activeOptions={{ exact: true }}
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+              >
+                Formulário
+              </Link>
+              <Link
+                to="/dashboard"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+              >
+                Dashboard
+              </Link>
+            </nav>
+          </div>
+        </header>
+        <Outlet />
+      </div>
+      <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
 }
