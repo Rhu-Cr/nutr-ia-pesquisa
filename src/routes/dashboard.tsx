@@ -85,19 +85,9 @@ function Dashboard() {
             <CardDescription>Comparação das avaliações de 1 a 5 nas quatro dimensões avaliadas.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={distribution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="nota" stroke="var(--muted-foreground)" fontSize={12} />
-                <YAxis stroke="var(--muted-foreground)" fontSize={12} allowDecimals={false} />
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Experiência" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Facilidade" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Auxílio IA" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Confiabilidade" fill="var(--chart-5)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Aguardando respostas…</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -107,17 +97,9 @@ function Dashboard() {
             <CardDescription>Intenção de uso na rotina clínica.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie data={adoption} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={3}>
-                  {adoption.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Aguardando respostas…</p>
+            </div>
           </CardContent>
         </Card>
       </section>
@@ -129,17 +111,8 @@ function Dashboard() {
             <CardDescription>Pontos fortes e sugestões destacadas pelos profissionais.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              {feedbacks.map((f, i) => (
-                <div key={i} className="relative rounded-lg border border-border bg-accent/30 p-5">
-                  <Quote className="absolute right-4 top-4 h-5 w-5 text-primary/30" />
-                  <Badge variant={f.tipo === "Ponto forte" ? "default" : "secondary"} className="mb-3">
-                    {f.tipo}
-                  </Badge>
-                  <p className="text-sm leading-relaxed text-foreground">"{f.texto}"</p>
-                  <p className="mt-3 text-xs font-medium text-muted-foreground">— {f.autor}</p>
-                </div>
-              ))}
+            <div className="flex h-[160px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Nenhum feedback qualitativo registrado ainda.</p>
             </div>
           </CardContent>
         </Card>
