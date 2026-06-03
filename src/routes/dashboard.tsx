@@ -1,20 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { Users, Star, TrendingUp, Quote } from "lucide-react";
+import { Users, Star, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -26,34 +12,29 @@ export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
-// Simulated data — 18 nutritionists
+// Dados reais — inicialmente vazios (aguardando coleta)
 const distribution = [
-  { nota: "1", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 1, "Confiabilidade": 1 },
-  { nota: "2", "Experiência": 1, "Facilidade": 1, "Auxílio IA": 1, "Confiabilidade": 2 },
-  { nota: "3", "Experiência": 2, "Facilidade": 3, "Auxílio IA": 2, "Confiabilidade": 3 },
-  { nota: "4", "Experiência": 7, "Facilidade": 6, "Auxílio IA": 6, "Confiabilidade": 7 },
-  { nota: "5", "Experiência": 8, "Facilidade": 8, "Auxílio IA": 8, "Confiabilidade": 5 },
+  { nota: "1", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "2", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "3", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "4", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "5", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
 ];
 
 const adoption = [
-  { name: "Sim, com certeza", value: 11 },
-  { name: "Talvez (ajustes)", value: 6 },
-  { name: "Não", value: 1 },
+  { name: "Sim, com certeza", value: 0 },
+  { name: "Talvez (ajustes)", value: 0 },
+  { name: "Não", value: 0 },
 ];
 
 const PIE_COLORS = ["var(--chart-1)", "var(--chart-3)", "var(--chart-4)"];
 
-const feedbacks = [
-  { tipo: "Ponto forte", autor: "Nutricionista clínica", texto: "A geração automática de planos alimentares personalizados em segundos é simplesmente revolucionária para a rotina do consultório." },
-  { tipo: "Ponto forte", autor: "Nutricionista esportiva", texto: "O cálculo automático de macros e a sugestão de substituições foram muito precisos. Senti economia real de tempo." },
-  { tipo: "Sugestão", autor: "Nutricionista funcional", texto: "Seria interessante integrar com bioimpedância e adicionar uma base de receitas regionais brasileiras." },
-  { tipo: "Sugestão", autor: "Nutricionista materno-infantil", texto: "Faltam protocolos específicos para gestantes e pediatria. Também sugiro exportar o plano em PDF com a identidade visual do profissional." },
-];
+const feedbacks: { tipo: string; autor: string; texto: string }[] = [];
 
 const kpis = [
-  { label: "Total de Respostas", value: "18", icon: Users, hint: "Nutricionistas participantes" },
-  { label: "Nota Média de Satisfação", value: "4.6/5", icon: Star, hint: "Média das 4 métricas avaliativas" },
-  { label: "Taxa de Aceitação", value: "94%", icon: TrendingUp, hint: "Respostas Sim + Talvez" },
+  { label: "Total de Respostas", value: "0", icon: Users, hint: "Nutricionistas participantes" },
+  { label: "Nota Média de Satisfação", value: "–/5", icon: Star, hint: "Média das 4 métricas avaliativas" },
+  { label: "Taxa de Aceitação", value: "0%", icon: TrendingUp, hint: "Respostas Sim + Talvez" },
 ];
 
 function Dashboard() {
@@ -90,19 +71,9 @@ function Dashboard() {
             <CardDescription>Comparação das avaliações de 1 a 5 nas quatro dimensões avaliadas.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={distribution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="nota" stroke="var(--muted-foreground)" fontSize={12} />
-                <YAxis stroke="var(--muted-foreground)" fontSize={12} allowDecimals={false} />
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Experiência" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Facilidade" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Auxílio IA" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Confiabilidade" fill="var(--chart-5)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Aguardando respostas…</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -112,17 +83,9 @@ function Dashboard() {
             <CardDescription>Intenção de uso na rotina clínica.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie data={adoption} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={3}>
-                  {adoption.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Aguardando respostas…</p>
+            </div>
           </CardContent>
         </Card>
       </section>
@@ -134,17 +97,8 @@ function Dashboard() {
             <CardDescription>Pontos fortes e sugestões destacadas pelos profissionais.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              {feedbacks.map((f, i) => (
-                <div key={i} className="relative rounded-lg border border-border bg-accent/30 p-5">
-                  <Quote className="absolute right-4 top-4 h-5 w-5 text-primary/30" />
-                  <Badge variant={f.tipo === "Ponto forte" ? "default" : "secondary"} className="mb-3">
-                    {f.tipo}
-                  </Badge>
-                  <p className="text-sm leading-relaxed text-foreground">"{f.texto}"</p>
-                  <p className="mt-3 text-xs font-medium text-muted-foreground">— {f.autor}</p>
-                </div>
-              ))}
+            <div className="flex h-[160px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
+              <p className="text-sm text-muted-foreground">Nenhum feedback qualitativo registrado ainda.</p>
             </div>
           </CardContent>
         </Card>
