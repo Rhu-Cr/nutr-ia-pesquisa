@@ -26,34 +26,29 @@ export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
-// Simulated data — 18 nutritionists
+// Dados reais — inicialmente vazios (aguardando coleta)
 const distribution = [
-  { nota: "1", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 1, "Confiabilidade": 1 },
-  { nota: "2", "Experiência": 1, "Facilidade": 1, "Auxílio IA": 1, "Confiabilidade": 2 },
-  { nota: "3", "Experiência": 2, "Facilidade": 3, "Auxílio IA": 2, "Confiabilidade": 3 },
-  { nota: "4", "Experiência": 7, "Facilidade": 6, "Auxílio IA": 6, "Confiabilidade": 7 },
-  { nota: "5", "Experiência": 8, "Facilidade": 8, "Auxílio IA": 8, "Confiabilidade": 5 },
+  { nota: "1", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "2", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "3", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "4", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
+  { nota: "5", "Experiência": 0, "Facilidade": 0, "Auxílio IA": 0, "Confiabilidade": 0 },
 ];
 
 const adoption = [
-  { name: "Sim, com certeza", value: 11 },
-  { name: "Talvez (ajustes)", value: 6 },
-  { name: "Não", value: 1 },
+  { name: "Sim, com certeza", value: 0 },
+  { name: "Talvez (ajustes)", value: 0 },
+  { name: "Não", value: 0 },
 ];
 
 const PIE_COLORS = ["var(--chart-1)", "var(--chart-3)", "var(--chart-4)"];
 
-const feedbacks = [
-  { tipo: "Ponto forte", autor: "Nutricionista clínica", texto: "A geração automática de planos alimentares personalizados em segundos é simplesmente revolucionária para a rotina do consultório." },
-  { tipo: "Ponto forte", autor: "Nutricionista esportiva", texto: "O cálculo automático de macros e a sugestão de substituições foram muito precisos. Senti economia real de tempo." },
-  { tipo: "Sugestão", autor: "Nutricionista funcional", texto: "Seria interessante integrar com bioimpedância e adicionar uma base de receitas regionais brasileiras." },
-  { tipo: "Sugestão", autor: "Nutricionista materno-infantil", texto: "Faltam protocolos específicos para gestantes e pediatria. Também sugiro exportar o plano em PDF com a identidade visual do profissional." },
-];
+const feedbacks: { tipo: string; autor: string; texto: string }[] = [];
 
 const kpis = [
-  { label: "Total de Respostas", value: "18", icon: Users, hint: "Nutricionistas participantes" },
-  { label: "Nota Média de Satisfação", value: "4.6/5", icon: Star, hint: "Média das 4 métricas avaliativas" },
-  { label: "Taxa de Aceitação", value: "94%", icon: TrendingUp, hint: "Respostas Sim + Talvez" },
+  { label: "Total de Respostas", value: "0", icon: Users, hint: "Nutricionistas participantes" },
+  { label: "Nota Média de Satisfação", value: "–/5", icon: Star, hint: "Média das 4 métricas avaliativas" },
+  { label: "Taxa de Aceitação", value: "0%", icon: TrendingUp, hint: "Respostas Sim + Talvez" },
 ];
 
 function Dashboard() {
