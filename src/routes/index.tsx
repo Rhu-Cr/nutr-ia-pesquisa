@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -61,9 +62,30 @@ function FormPage() {
   const [liked, setLiked] = useState("");
   const [improve, setImprove] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const required = ["exp", "use", "ia", "conf"] as const;
+    if (required.some((k) => !scales[k]) || !adoption) {
+      toast.error("Por favor, responda todas as perguntas obrigatórias (1 a 5).");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("feedbacks").insert({
+      exp: Number(scales.exp),
+      use: Number(scales.use),
+      ia: Number(scales.ia),
+      conf: Number(scales.conf),
+      adoption,
+      liked: liked.trim() || null,
+      improve: improve.trim() || null,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Não foi possível enviar. Tente novamente.");
+      return;
+    }
     setSubmitted(true);
     toast.success("Feedback enviado com sucesso! Obrigado pela colaboração.");
   };
@@ -167,8 +189,8 @@ function FormPage() {
           </CardContent>
         </Card>
 
-        <Button type="submit" size="lg" className="w-full gap-2">
-          <Send className="h-4 w-4" /> Enviar Feedback
+        <Button type="submit" size="lg" className="w-full gap-2" disabled={submitting}>
+          <Send className="h-4 w-4" /> {submitting ? "Enviando…" : "Enviar Feedback"}
         </Button>
       </form>
     </div>
