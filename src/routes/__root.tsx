@@ -133,22 +133,8 @@ function RootComponent() {
               </div>
               <span>Nutr.IA <span className="font-normal text-muted-foreground">| Portal de Feedback</span></span>
             </Link>
-            <nav className="flex items-center gap-1">
-              <Link
-                to="/"
-                activeOptions={{ exact: true }}
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
-              >
-                Formulário
-              </Link>
-              <Link
-                to="/dashboard"
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
-              >
-                Dashboard
-              </Link>
-            </nav>
           </div>
+
         </header>
         <Outlet />
       </div>
