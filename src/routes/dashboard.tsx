@@ -11,7 +11,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Users, Star, TrendingUp, Quote, UserPlus, Copy, Check } from "lucide-react";
+import { Users, Star, TrendingUp, Quote, UserPlus, Copy, Check, MessageCircle, Mail } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
