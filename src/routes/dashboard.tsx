@@ -11,7 +11,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Users, Star, TrendingUp, Quote, UserPlus, Copy, Check } from "lucide-react";
+import { Users, Star, TrendingUp, Quote, UserPlus, Copy, Check, MessageCircle, Mail } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -328,12 +328,17 @@ function Dashboard() {
                   <TableRow>
                     <TableHead>Usuário</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Link único</TableHead>
+                    <TableHead>Link único</TableHead>
+                    <TableHead className="text-right">Compartilhar</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {respondents.map((r) => {
                     const done = submittedIds.has(r.id);
+                    const url = linkFor(r.token);
+                    const message = `Olá, ${r.name}! Obrigado por participar da pesquisa do meu TCC sobre o protótipo Nutr.IA. Seu link único de feedback (uso individual): ${url}`;
+                    const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                    const mailUrl = `mailto:?subject=${encodeURIComponent("Feedback Nutr.IA – seu link único")}&body=${encodeURIComponent(message)}`;
                     return (
                       <TableRow key={r.id}>
                         <TableCell className="font-medium">{r.name}</TableCell>
@@ -344,20 +349,38 @@ function Dashboard() {
                             <Badge variant="secondary">Pendente</Badge>
                           )}
                         </TableCell>
+                        <TableCell>
+                          <code className="block max-w-[280px] truncate rounded bg-muted px-2 py-1 text-xs text-muted-foreground" title={url}>
+                            {url}
+                          </code>
+                        </TableCell>
                         <TableCell className="text-right">
-                          <Button size="sm" variant="outline" className="gap-2" onClick={() => copyLink(r)}>
-                            {copiedId === r.id ? (
-                              <><Check className="h-4 w-4" /> Copiado</>
-                            ) : (
-                              <><Copy className="h-4 w-4" /> Copiar link</>
-                            )}
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" className="gap-2" onClick={() => copyLink(r)}>
+                              {copiedId === r.id ? (
+                                <><Check className="h-4 w-4" /> Copiado</>
+                              ) : (
+                                <><Copy className="h-4 w-4" /> Copiar</>
+                              )}
+                            </Button>
+                            <Button size="sm" variant="outline" className="gap-2" asChild>
+                              <a href={waUrl} target="_blank" rel="noreferrer" aria-label={`Enviar link para ${r.name} via WhatsApp`}>
+                                <MessageCircle className="h-4 w-4" /> WhatsApp
+                              </a>
+                            </Button>
+                            <Button size="sm" variant="outline" className="gap-2" asChild>
+                              <a href={mailUrl} aria-label={`Enviar link para ${r.name} por e-mail`}>
+                                <Mail className="h-4 w-4" /> E-mail
+                              </a>
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
                   })}
                 </TableBody>
               </Table>
+
             )}
           </CardContent>
         </Card>
