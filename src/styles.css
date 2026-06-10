@@ -82,11 +82,12 @@
   --border: oklch(0.90 0.015 150);
   --input: oklch(0.92 0.015 150);
   --ring: oklch(0.62 0.13 155);
-  --chart-1: oklch(0.62 0.13 155);
-  --chart-2: oklch(0.70 0.14 180);
-  --chart-3: oklch(0.75 0.15 90);
-  --chart-4: oklch(0.65 0.18 50);
-  --chart-5: oklch(0.55 0.18 280);
+  /* Article-friendly palette: distinct hues, readable in print & projectors */
+  --chart-1: oklch(0.55 0.15 155); /* verde primário */
+  --chart-2: oklch(0.55 0.16 250); /* azul */
+  --chart-3: oklch(0.70 0.17 75);  /* âmbar */
+  --chart-4: oklch(0.55 0.20 25);  /* vermelho-tijolo */
+  --chart-5: oklch(0.50 0.18 300); /* roxo */
   --sidebar: oklch(0.984 0.003 247.858);
   --sidebar-foreground: oklch(0.129 0.042 264.695);
   --sidebar-primary: oklch(0.208 0.042 265.755);
