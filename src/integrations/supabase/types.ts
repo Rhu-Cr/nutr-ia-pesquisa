@@ -24,7 +24,6 @@ export type Database = {
           id: string
           improve: string | null
           liked: string | null
-          respondent_id: string | null
           use: number
         }
         Insert: {
@@ -36,7 +35,6 @@ export type Database = {
           id?: string
           improve?: string | null
           liked?: string | null
-          respondent_id?: string | null
           use: number
         }
         Update: {
@@ -48,37 +46,7 @@ export type Database = {
           id?: string
           improve?: string | null
           liked?: string | null
-          respondent_id?: string | null
           use?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "feedbacks_respondent_id_fkey"
-            columns: ["respondent_id"]
-            isOneToOne: true
-            referencedRelation: "respondents"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      respondents: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          token: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          token: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          token?: string
         }
         Relationships: []
       }

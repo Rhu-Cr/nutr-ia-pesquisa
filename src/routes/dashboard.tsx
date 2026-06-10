@@ -2,22 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import { Users, Star, TrendingUp, Quote, UserPlus, Copy, Check } from "lucide-react";
+import { Users, Star, TrendingUp, Quote } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -39,51 +29,30 @@ type Feedback = {
   liked: string | null;
   improve: string | null;
   created_at: string;
-  respondent_id: string | null;
-};
-
-type Respondent = {
-  id: string;
-  name: string;
-  token: string;
-  created_at: string;
 };
 
 const PIE_COLORS = ["var(--chart-1)", "var(--chart-3)", "var(--chart-4)"];
 
-function generateToken() {
-  const bytes = new Uint8Array(12);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
 function Dashboard() {
   const [data, setData] = useState<Feedback[]>([]);
-  const [respondents, setRespondents] = useState<Respondent[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     const load = async () => {
-      const [{ data: fbs }, { data: rs }] = await Promise.all([
-        supabase.from("feedbacks").select("*").order("created_at", { ascending: false }),
-        supabase.from("respondents").select("*").order("created_at", { ascending: false }),
-      ]);
-      if (!mounted) return;
-      setData((fbs ?? []) as Feedback[]);
-      setRespondents((rs ?? []) as Respondent[]);
-      setLoading(false);
+      const { data: rows } = await supabase
+        .from("feedbacks")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (mounted) {
+        setData((rows ?? []) as Feedback[]);
+        setLoading(false);
+      }
     };
     load();
     const channel = supabase
-      .channel("portal-changes")
+      .channel("feedbacks-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "feedbacks" }, load)
-      .on("postgres_changes", { event: "*", schema: "public", table: "respondents" }, load)
       .subscribe();
     return () => {
       mounted = false;
@@ -141,12 +110,6 @@ function Dashboard() {
     return items.slice(0, 8);
   }, [data]);
 
-  const submittedIds = useMemo(() => {
-    const s = new Set<string>();
-    data.forEach((d) => d.respondent_id && s.add(d.respondent_id));
-    return s;
-  }, [data]);
-
   const kpis = [
     { label: "Total de Respostas", value: String(total), icon: Users, hint: "Nutricionistas participantes" },
     { label: "Nota Média de Satisfação", value: avg ? `${avg.toFixed(1)}/5` : "–/5", icon: Star, hint: "Média das 4 métricas avaliativas" },
@@ -155,41 +118,6 @@ function Dashboard() {
 
   const hasData = total > 0;
   const hasAdoption = adoption.some((a) => a.value > 0);
-
-  const handleCreate = async () => {
-    const name = newName.trim();
-    if (!name) {
-      toast.error("Informe o nome do nutricionista.");
-      return;
-    }
-    setCreating(true);
-    const token = generateToken();
-    const { error } = await supabase.from("respondents").insert({ name, token });
-    setCreating(false);
-    if (error) {
-      toast.error("Não foi possível criar o usuário.");
-      return;
-    }
-    toast.success("Usuário criado. Link único gerado.");
-    setNewName("");
-    setDialogOpen(false);
-  };
-
-  const linkFor = (token: string) => {
-    if (typeof window === "undefined") return `/f/${token}`;
-    return `${window.location.origin}/f/${token}`;
-  };
-
-  const copyLink = async (r: Respondent) => {
-    try {
-      await navigator.clipboard.writeText(linkFor(r.token));
-      setCopiedId(r.id);
-      toast.success(`Link de ${r.name} copiado.`);
-      setTimeout(() => setCopiedId((c) => (c === r.id ? null : c)), 1500);
-    } catch {
-      toast.error("Não foi possível copiar o link.");
-    }
-  };
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10">
@@ -273,91 +201,6 @@ function Dashboard() {
               <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
                 <p className="text-sm text-muted-foreground">Aguardando respostas…</p>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-            <div>
-              <CardTitle>Usuários</CardTitle>
-              <CardDescription>
-                Cada nutricionista recebe um link único de feedback, válido para um único envio.
-              </CardDescription>
-            </div>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2"><UserPlus className="h-4 w-4" /> Novo usuário</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Adicionar nutricionista</DialogTitle>
-                  <DialogDescription>
-                    Informe o nome do participante. Um link único de feedback será gerado automaticamente.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-2 py-2">
-                  <Label htmlFor="user-name">Nome</Label>
-                  <Input
-                    id="user-name"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Ex.: Dra. Marina Souza"
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleCreate(); } }}
-                  />
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={creating}>Cancelar</Button>
-                  <Button onClick={handleCreate} disabled={creating}>
-                    {creating ? "Criando…" : "Confirmar"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </CardHeader>
-          <CardContent>
-            {respondents.length === 0 ? (
-              <div className="flex h-[140px] items-center justify-center rounded-lg border border-dashed border-border bg-accent/20">
-                <p className="text-sm text-muted-foreground">Nenhum usuário cadastrado ainda.</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Usuário</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Link único</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {respondents.map((r) => {
-                    const done = submittedIds.has(r.id);
-                    return (
-                      <TableRow key={r.id}>
-                        <TableCell className="font-medium">{r.name}</TableCell>
-                        <TableCell>
-                          {done ? (
-                            <Badge>Respondido</Badge>
-                          ) : (
-                            <Badge variant="secondary">Pendente</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button size="sm" variant="outline" className="gap-2" onClick={() => copyLink(r)}>
-                            {copiedId === r.id ? (
-                              <><Check className="h-4 w-4" /> Copiado</>
-                            ) : (
-                              <><Copy className="h-4 w-4" /> Copiar link</>
-                            )}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
             )}
           </CardContent>
         </Card>

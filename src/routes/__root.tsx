@@ -80,17 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lovable App" },
-      { name: "description", content: "Nutr.IA Feedback Hub collects and visualizes nutritionist feedback on an AI nutrition prototype." },
+      { name: "description", content: "Lovable Generated Project" },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Nutr.IA Feedback Hub collects and visualizes nutritionist feedback on an AI nutrition prototype." },
+      { property: "og:description", content: "Lovable Generated Project" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Nutr.IA Feedback Hub collects and visualizes nutritionist feedback on an AI nutrition prototype." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3f626a6b-336b-4045-8284-f11be9e15003/id-preview-ada62baf--bcfda5b7-9ce0-4ed1-b136-3b979305973e.lovable.app-1780515396415.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3f626a6b-336b-4045-8284-f11be9e15003/id-preview-ada62baf--bcfda5b7-9ce0-4ed1-b136-3b979305973e.lovable.app-1780515396415.png" },
     ],
     links: [
       {
@@ -133,8 +129,22 @@ function RootComponent() {
               </div>
               <span>Nutr.IA <span className="font-normal text-muted-foreground">| Portal de Feedback</span></span>
             </Link>
+            <nav className="flex items-center gap-1">
+              <Link
+                to="/"
+                activeOptions={{ exact: true }}
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+              >
+                Formulário
+              </Link>
+              <Link
+                to="/dashboard"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+              >
+                Dashboard
+              </Link>
+            </nav>
           </div>
-
         </header>
         <Outlet />
       </div>
