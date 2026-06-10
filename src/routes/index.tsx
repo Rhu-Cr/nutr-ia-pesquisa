@@ -65,6 +65,8 @@ function FormPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const submit = useServerFn(submitFeedback);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const required = ["exp", "use", "ia", "conf"] as const;
@@ -73,23 +75,28 @@ function FormPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("feedbacks").insert({
-      exp: Number(scales.exp),
-      use: Number(scales.use),
-      ia: Number(scales.ia),
-      conf: Number(scales.conf),
-      adoption,
-      liked: liked.trim() || null,
-      improve: improve.trim() || null,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error("Não foi possível enviar. Tente novamente.");
-      return;
+    try {
+      await submit({
+        data: {
+          exp: Number(scales.exp),
+          use: Number(scales.use),
+          ia: Number(scales.ia),
+          conf: Number(scales.conf),
+          adoption: adoption as "sim" | "talvez" | "nao",
+          liked: liked.trim() || null,
+          improve: improve.trim() || null,
+        },
+      });
+      setSubmitted(true);
+      toast.success("Feedback enviado com sucesso! Obrigado pela colaboração.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Não foi possível enviar. Tente novamente.";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitted(true);
-    toast.success("Feedback enviado com sucesso! Obrigado pela colaboração.");
   };
+
 
   if (submitted) {
     return (
