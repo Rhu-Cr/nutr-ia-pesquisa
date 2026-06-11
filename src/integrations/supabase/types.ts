@@ -42,7 +42,6 @@ export type Database = {
           id: string
           improve: string | null
           liked: string | null
-          respondent_id: string | null
           use: number
         }
         Insert: {
@@ -54,7 +53,6 @@ export type Database = {
           id?: string
           improve?: string | null
           liked?: string | null
-          respondent_id?: string | null
           use: number
         }
         Update: {
@@ -66,7 +64,6 @@ export type Database = {
           id?: string
           improve?: string | null
           liked?: string | null
-          respondent_id?: string | null
           use?: number
         }
         Relationships: []
