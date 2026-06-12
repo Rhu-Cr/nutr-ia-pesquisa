@@ -127,7 +127,7 @@ function FormPage() {
             <p className="text-muted-foreground">
               Sua contribuição é fundamental para a evolução do Nutr.IA e para a pesquisa de TCC.
             </p>
-            <Button onClick={() => { setSubmitted(false); setScales({}); setAdoption(""); setLiked(""); setImprove(""); }} variant="outline">
+            <Button onClick={() => { setSubmitted(false); setName(""); setEmail(""); setScales({}); setAdoption(""); setLiked(""); setImprove(""); }} variant="outline">
               Enviar outra resposta
             </Button>
           </CardContent>
