@@ -151,7 +151,28 @@ function FormPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Identificação</CardTitle>
+            <CardDescription>
+              Usado apenas para evitar respostas duplicadas. Seus dados não aparecem no dashboard público.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome completo</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" maxLength={120} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@exemplo.com" maxLength={255} required />
+              <p className="text-xs text-muted-foreground">Permitida apenas uma resposta por e-mail.</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {questions.map((q) => (
+
           <Card key={q.id}>
             <CardHeader>
               <CardTitle className="text-base">{q.title}</CardTitle>
