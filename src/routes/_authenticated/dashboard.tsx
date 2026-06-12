@@ -1,24 +1,80 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Star, TrendingUp, Quote, Download } from "lucide-react";
+import { Users, Star, TrendingUp, Quote, Download, ShieldAlert, Loader2 } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, LabelList, Legend, Pie, PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import { checkDashboardAccess } from "@/lib/dashboard-access.functions";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard de Resultados – Nutr.IA" },
       { name: "description", content: "Resultados analíticos do feedback dos nutricionistas." },
+      { name: "robots", content: "noindex" },
     ],
   }),
-  component: Dashboard,
+  component: DashboardGate,
 });
+
+function DashboardGate() {
+  const checkAccess = useServerFn(checkDashboardAccess);
+  const navigate = useNavigate();
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard-access"],
+    queryFn: () => checkAccess(),
+    staleTime: 60_000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!data?.allowed) {
+    return (
+      <div className="container mx-auto flex min-h-[60vh] max-w-md items-center px-4 py-10">
+        <Card className="w-full border-destructive/30">
+          <CardHeader>
+            <div className="mb-2 inline-flex w-fit rounded-full bg-destructive/10 p-2">
+              <ShieldAlert className="h-5 w-5 text-destructive" />
+            </div>
+            <CardTitle>Acesso não autorizado</CardTitle>
+            <CardDescription>
+              O e-mail <strong>{data?.email ?? "—"}</strong> não consta na lista de
+              acessos autorizados ao dashboard. Solicite liberação à equipe responsável
+              pela pesquisa.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate({ to: "/auth", replace: true });
+              }}
+            >
+              Sair e usar outra conta
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <Dashboard />;
+}
 
 type Feedback = {
   id: string;
