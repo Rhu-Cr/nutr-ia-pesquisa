@@ -3,6 +3,8 @@ import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 const inputSchema = z.object({
+  name: z.string().trim().min(1, "Nome obrigatório").max(120),
+  email: z.string().trim().toLowerCase().email("E-mail inválido").max(255),
   exp: z.number().int().min(1).max(5),
   use: z.number().int().min(1).max(5),
   ia: z.number().int().min(1).max(5),
@@ -11,6 +13,7 @@ const inputSchema = z.object({
   liked: z.string().trim().max(2000).nullable().optional(),
   improve: z.string().trim().max(2000).nullable().optional(),
 });
+
 
 const MAX_PER_HOUR = 10;
 
