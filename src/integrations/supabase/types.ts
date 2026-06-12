@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      dashboard_allowed_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       feedback_rate_limits: {
         Row: {
           created_at: string
@@ -79,7 +97,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_dashboard_allowed: { Args: { _email: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
