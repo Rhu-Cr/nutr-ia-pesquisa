@@ -1,9 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -11,8 +12,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { Leaf } from "lucide-react";
+import { Leaf, LogOut } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 function NotFoundComponent() {
   return (
@@ -143,6 +146,7 @@ function RootComponent() {
               >
                 Dashboard
               </Link>
+              <AuthIndicator />
             </nav>
           </div>
         </header>
@@ -150,5 +154,43 @@ function RootComponent() {
       </div>
       <Toaster richColors position="top-center" />
     </QueryClientProvider>
+  );
+}
+
+function AuthIndicator() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: user } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: async () => (await supabase.auth.getUser()).data.user,
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+        queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [queryClient]);
+
+  if (!user) return null;
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="ml-1 gap-1.5"
+      onClick={async () => {
+        await queryClient.cancelQueries();
+        queryClient.clear();
+        await supabase.auth.signOut();
+        navigate({ to: "/auth", replace: true });
+      }}
+      title={user.email ?? "Sair"}
+    >
+      <LogOut className="h-4 w-4" />
+      <span className="hidden sm:inline">Sair</span>
+    </Button>
   );
 }
