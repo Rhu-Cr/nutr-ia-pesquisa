@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard de Resultados – Nutr.IA" },
