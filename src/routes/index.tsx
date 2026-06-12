@@ -60,6 +60,8 @@ function ScaleField({ id, min, max, value, onChange }: { id: string; min: string
 }
 
 function FormPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [scales, setScales] = useState<Record<string, string>>({});
   const [adoption, setAdoption] = useState("");
   const [liked, setLiked] = useState("");
@@ -72,6 +74,15 @@ function FormPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const required = ["exp", "use", "ia", "conf"] as const;
+    if (!name.trim() || !email.trim()) {
+      toast.error("Por favor, informe seu nome e e-mail.");
+      return;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!emailOk) {
+      toast.error("Informe um e-mail válido.");
+      return;
+    }
     if (required.some((k) => !scales[k]) || !adoption) {
       toast.error("Por favor, responda todas as perguntas obrigatórias (1 a 5).");
       return;
@@ -80,6 +91,8 @@ function FormPage() {
     try {
       await submit({
         data: {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
           exp: Number(scales.exp),
           use: Number(scales.use),
           ia: Number(scales.ia),
@@ -98,6 +111,8 @@ function FormPage() {
       setSubmitting(false);
     }
   };
+
+
 
 
   if (submitted) {
