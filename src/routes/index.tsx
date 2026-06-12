@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -58,6 +60,8 @@ function ScaleField({ id, min, max, value, onChange }: { id: string; min: string
 }
 
 function FormPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [scales, setScales] = useState<Record<string, string>>({});
   const [adoption, setAdoption] = useState("");
   const [liked, setLiked] = useState("");
@@ -70,6 +74,15 @@ function FormPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const required = ["exp", "use", "ia", "conf"] as const;
+    if (!name.trim() || !email.trim()) {
+      toast.error("Por favor, informe seu nome e e-mail.");
+      return;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!emailOk) {
+      toast.error("Informe um e-mail válido.");
+      return;
+    }
     if (required.some((k) => !scales[k]) || !adoption) {
       toast.error("Por favor, responda todas as perguntas obrigatórias (1 a 5).");
       return;
@@ -78,6 +91,8 @@ function FormPage() {
     try {
       await submit({
         data: {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
           exp: Number(scales.exp),
           use: Number(scales.use),
           ia: Number(scales.ia),
@@ -98,6 +113,8 @@ function FormPage() {
   };
 
 
+
+
   if (submitted) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-16">
@@ -110,7 +127,7 @@ function FormPage() {
             <p className="text-muted-foreground">
               Sua contribuição é fundamental para a evolução do Nutr.IA e para a pesquisa de TCC.
             </p>
-            <Button onClick={() => { setSubmitted(false); setScales({}); setAdoption(""); setLiked(""); setImprove(""); }} variant="outline">
+            <Button onClick={() => { setSubmitted(false); setName(""); setEmail(""); setScales({}); setAdoption(""); setLiked(""); setImprove(""); }} variant="outline">
               Enviar outra resposta
             </Button>
           </CardContent>
@@ -134,7 +151,28 @@ function FormPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Identificação</CardTitle>
+            <CardDescription>
+              Usado apenas para evitar respostas duplicadas. Seus dados não aparecem no dashboard público.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome completo</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" maxLength={120} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@exemplo.com" maxLength={255} required />
+              <p className="text-xs text-muted-foreground">Permitida apenas uma resposta por e-mail.</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {questions.map((q) => (
+
           <Card key={q.id}>
             <CardHeader>
               <CardTitle className="text-base">{q.title}</CardTitle>

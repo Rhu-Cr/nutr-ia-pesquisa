@@ -3,6 +3,8 @@ import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 const inputSchema = z.object({
+  name: z.string().trim().min(1, "Nome obrigatório").max(120),
+  email: z.string().trim().toLowerCase().email("E-mail inválido").max(255),
   exp: z.number().int().min(1).max(5),
   use: z.number().int().min(1).max(5),
   ia: z.number().int().min(1).max(5),
@@ -11,6 +13,7 @@ const inputSchema = z.object({
   liked: z.string().trim().max(2000).nullable().optional(),
   improve: z.string().trim().max(2000).nullable().optional(),
 });
+
 
 const MAX_PER_HOUR = 10;
 
@@ -39,7 +42,21 @@ export const submitFeedback = createServerFn({ method: "POST" })
       );
     }
 
+    // Enforce one response per email (case-insensitive via unique index on lower(email))
+    const { data: existing, error: existingErr } = await supabaseAdmin
+      .from("feedbacks")
+      .select("id")
+      .eq("email", data.email)
+      .limit(1)
+      .maybeSingle();
+    if (existingErr) throw new Error("Não foi possível validar o e-mail. Tente novamente.");
+    if (existing) {
+      throw new Error("Este e-mail já enviou uma resposta. Apenas um envio por e-mail é permitido.");
+    }
+
     const { error: insertErr } = await supabaseAdmin.from("feedbacks").insert({
+      name: data.name,
+      email: data.email,
       exp: data.exp,
       use: data.use,
       ia: data.ia,
@@ -48,7 +65,13 @@ export const submitFeedback = createServerFn({ method: "POST" })
       liked: data.liked?.trim() ? data.liked.trim() : null,
       improve: data.improve?.trim() ? data.improve.trim() : null,
     });
-    if (insertErr) throw new Error("Não foi possível enviar o feedback.");
+    if (insertErr) {
+      if ((insertErr as { code?: string }).code === "23505") {
+        throw new Error("Este e-mail já enviou uma resposta.");
+      }
+      throw new Error("Não foi possível enviar o feedback.");
+    }
+
 
     await supabaseAdmin.from("feedback_rate_limits").insert({ ip });
 

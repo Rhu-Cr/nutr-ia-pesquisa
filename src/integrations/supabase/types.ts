@@ -37,33 +37,39 @@ export type Database = {
           adoption: string
           conf: number
           created_at: string
+          email: string | null
           exp: number
           ia: number
           id: string
           improve: string | null
           liked: string | null
+          name: string | null
           use: number
         }
         Insert: {
           adoption: string
           conf: number
           created_at?: string
+          email?: string | null
           exp: number
           ia: number
           id?: string
           improve?: string | null
           liked?: string | null
+          name?: string | null
           use: number
         }
         Update: {
           adoption?: string
           conf?: number
           created_at?: string
+          email?: string | null
           exp?: number
           ia?: number
           id?: string
           improve?: string | null
           liked?: string | null
+          name?: string | null
           use?: number
         }
         Relationships: []
